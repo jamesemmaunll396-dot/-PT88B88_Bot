@@ -1,56 +1,185 @@
+
 import os
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, ContextTypes
 
-# Enable logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
 )
 
-# Your exact welcome message (no link inside the text)
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes
+)
+
+# ==========================================
+# LOGGING
+# ==========================================
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
+
+
+# ==========================================
+# BOT CONFIGURATION
+# ==========================================
+
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+
+# Telegram contact link
+CONTACT_LINK = "https://t.me/galaxy99_kh"
+
+# Button text
+BUTTON_TEXT = "DM NOW OR CONTACT ME NOW TO GET FREE BONUS"
+
+
+# ==========================================
+# WELCOME MESSAGE
+# ==========================================
+
 WELCOME_MESSAGE = (
-    "សូមស្វាគមន៍មកវេបសាយធំបំផុត ងាយស្រួលលេង📲 និងគួរឱ្យទុកចិត្តបំផុតនៅកម្ពុជា🔥\n\n"
-    "សេវាកម្ម២៤ម៉ោង"
+    "សូមស្វាគមន៍មកវេបសាយធំបំផុត ងាយស្រួលលេង📲 "
+    "និងគួរឱ្យទុកចិត្តបំផុតនៅកម្ពុជា🔥\n\n"
+    "សេវាកម្ម២៤ម៉ោង\n\n"
     "https://t.me/galaxy99_kh"
 )
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Sends the welcome message with a clickable link button."""
-    
-    # Create the button layout
+
+# ==========================================
+# START COMMAND
+# ==========================================
+
+async def start(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
     keyboard = [
         [
-            # This creates the clickable button
             InlineKeyboardButton(
-                text="DM NOW OR CONTACT ME NOW TO GET FREE BONUS", 
-                url="https://t.me/galaxy99_kh" 
+                text=BUTTON_TEXT,
+                url=CONTACT_LINK
             )
         ]
     ]
-    
-    # Wrap the keyboard in InlineKeyboardMarkup
+
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # Send the message along with the button
-    await update.message.reply_text(
-        text=WELCOME_MESSAGE, 
+    await update.effective_message.reply_text(
+        text=WELCOME_MESSAGE,
         reply_markup=reply_markup,
-        disable_web_page_preview=True # Keeps the message clean without the big preview box
+        disable_web_page_preview=True
     )
 
-def main() -> None:
-    """Start the bot."""
-    token = os.environ.get("TELEGRAM_BOT_TOKEN")
-    
-    if not token:
-        raise ValueError("No TELEGRAM_BOT_TOKEN found in environment variables.")
+    logger.info(
+        "Welcome message sent to user %s",
+        update.effective_user.id
+    )
 
-    application = Application.builder().token(token).build()
-    application.add_handler(CommandHandler("start", start))
 
-    # drop_pending_updates=True prevents the bot from spamming old /start messages
-    application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
+# ==========================================
+# HELP COMMAND
+# ==========================================
+
+async def help_command(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    await update.effective_message.reply_text(
+        "សូមប្រើ /start ដើម្បីចាប់ផ្តើម។\n\n"
+        "Send /start to receive the welcome message."
+    )
+
+
+# ==========================================
+# UNKNOWN COMMAND
+# ==========================================
+
+async def unknown_command(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    await update.effective_message.reply_text(
+        "Please send /start to begin."
+    )
+
+
+# ==========================================
+# ERROR HANDLER
+# ==========================================
+
+async def error_handler(
+    update: object,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    logger.error(
+        "Telegram bot error:",
+        exc_info=context.error
+    )
+
+
+# ==========================================
+# MAIN FUNCTION
+# ==========================================
+
+def main():
+
+    if not BOT_TOKEN:
+        raise ValueError(
+            "TELEGRAM_BOT_TOKEN is missing. "
+            "Please add it to Render environment variables."
+        )
+
+    logger.info("Starting Telegram bot...")
+
+    application = (
+        Application.builder()
+        .token(BOT_TOKEN)
+        .build()
+    )
+
+    # Register commands
+    application.add_handler(
+        CommandHandler("start", start)
+    )
+
+    application.add_handler(
+        CommandHandler("help", help_command)
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.COMMAND,
+            unknown_command
+        )
+    )
+
+    # Register error handler
+    application.add_error_handler(error_handler)
+
+    logger.info("Bot is ready to receive Telegram messages.")
+
+    # Start bot
+    application.run_polling(
+        allowed_updates=Update.ALL_TYPES,
+        drop_pending_updates=True
+    )
+
+
+# ==========================================
+# RUN BOT
+# ==========================================
+
+from telegram.ext import MessageHandler, filters
 
 if __name__ == "__main__":
     main()
