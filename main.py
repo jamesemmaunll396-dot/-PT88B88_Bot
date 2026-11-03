@@ -33,10 +33,10 @@ logger = logging.getLogger(__name__)
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 
 # Telegram contact link
-CONTACT_LINK = "https://t.me/galaxy99_kh"
+CONTACT_LINK = "https://t.me/Slotvipswc88vra"
 
 # Button text
-BUTTON_TEXT = "DM NOW OR CONTACT ME NOW TO GET FREE BONUS"
+BUTTON_TEXT = "DM NOW ME NOW GET FREE BONUS"
 
 
 # ==========================================
@@ -47,7 +47,7 @@ WELCOME_MESSAGE = (
     "សូមស្វាគមន៍មកវេបសាយធំបំផុត ងាយស្រួលលេង📲 "
     "និងគួរឱ្យទុកចិត្តបំផុតនៅកម្ពុជា🔥\n\n"
     "សេវាកម្ម២៤ម៉ោង\n\n"
-    "https://t.me/galaxy99_kh"
+    "https://t.me/Slotvipswc88vra"
 )
 
 
