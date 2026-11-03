@@ -36,7 +36,7 @@ BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 CONTACT_LINK = "https://t.me/Slotvipswc88vra"
 
 # Button text
-BUTTON_TEXT = "DM NOW ME NOW GET FREE BONUS"
+BUTTON_TEXT = "DM ME NOW GET FREE BONUS"
 
 
 # ==========================================
